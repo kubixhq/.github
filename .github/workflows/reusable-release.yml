@@ -14,7 +14,7 @@ on:
       go-version:
         description: "Go version (if language is go)"
         type: string
-        default: "1.22"
+        default: "1.25"
       working-directory:
         description: "Working directory"
         type: string
@@ -69,6 +69,13 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Set up Go
+        if: inputs.language == 'go'
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ inputs.go-version }}
+          cache: true
+
       - name: Build Go binaries
         if: inputs.language == 'go'
         working-directory: ${{ inputs.working-directory }}
@@ -82,10 +89,18 @@ jobs:
 
       - name: Generate changelog
         id: changelog
-        uses: orhun/git-cliff-action@v3
-        with:
-          config: cliff.toml
-          args: --latest --strip header
+        working-directory: ${{ inputs.working-directory }}
+        run: |
+          tmp=$(mktemp -d)
+          curl -sSL "https://github.com/orhun/git-cliff/releases/download/v2.4.0/git-cliff-2.4.0-x86_64-unknown-linux-gnu.tar.gz" \
+            | tar xz -C "$tmp"
+          cliff=$(find "$tmp" -name 'git-cliff' -type f | head -1)
+          CONTENT=$("$cliff" --config cliff.toml --latest --strip header 2>/dev/null || true)
+          {
+            echo "content<<EOF_CLIFF"
+            echo "$CONTENT"
+            echo "EOF_CLIFF"
+          } >> "$GITHUB_OUTPUT"
         continue-on-error: true
 
       - name: Create GitHub Release
