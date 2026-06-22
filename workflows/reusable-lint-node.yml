@@ -1,0 +1,40 @@
+name: Reusable Lint — Node.js
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        description: "Working directory"
+        type: string
+        default: "."
+      node-version:
+        description: "Node.js version"
+        type: string
+        default: "20"
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        working-directory: ${{ inputs.working-directory }}
+        run: npm ci
+
+      - name: Lint
+        working-directory: ${{ inputs.working-directory }}
+        run: npm run lint --if-present
+
+      - name: Type check
+        working-directory: ${{ inputs.working-directory }}
+        run: npm run type-check --if-present
