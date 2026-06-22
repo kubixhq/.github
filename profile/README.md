@@ -89,23 +89,27 @@ Restart with `docker compose restart` and Kubix will start collecting metrics.
 - Shows a diff between any two schema versions
 - Works without modifying your existing migration setup
 
+## Repositories
+
+Kubix is organized as a multi-repo project under the [`kubixhq`](https://github.com/kubixhq) organization:
+
+| Repository | Description |
+|------------|-------------|
+| [`kubixhq/kubix`](https://github.com/kubixhq/kubix) | This repo — main entry point, docs, docker-compose |
+| [`kubixhq/kubix-api`](https://github.com/kubixhq/kubix-api) | Spring Boot backend — analysis engine & REST API |
+| [`kubixhq/kubix-dashboard`](https://github.com/kubixhq/kubix-dashboard) | Next.js frontend — all 3 module UIs |
+| [`kubixhq/kubix-connector-postgres`](https://github.com/kubixhq/kubix-connector-postgres) | PostgreSQL connector |
+| [`kubixhq/kubix-connector-mysql`](https://github.com/kubixhq/kubix-connector-mysql) | MySQL connector (coming soon) |
+| [`kubixhq/kubix-docs`](https://github.com/kubixhq/kubix-docs) | Documentation site |
+
 ## Architecture
 
 ```
-kubix/
-├── core/
-│   ├── ingestion/        # Collects data from your services
-│   ├── analysis-engine/  # Dependency, performance, diff logic
-│   └── api/              # REST API (Spring Boot)
-├── dashboard/            # Next.js frontend
-│   └── modules/
-│       ├── api-catalog/
-│       ├── db-performance/
-│       └── schema-migration/
-└── connectors/           # Database & framework adapters
-    ├── postgres/
-    ├── mysql/
-    └── ...
+kubixhq/
+├── kubix              ← you are here (start here)
+├── kubix-api          ← ingestion + analysis engine + REST API
+├── kubix-dashboard    ← Next.js, 3 module UIs
+└── kubix-connector-* ← one repo per database / migration tool
 ```
 
 Kubix runs entirely in your infrastructure. No data leaves your environment.
@@ -126,7 +130,6 @@ Want a connector that doesn't exist yet? [Open an issue](https://github.com/kubi
 - [ ] API Catalog module
 - [ ] DB Performance module
 - [ ] Cross-module correlation view
-- [ ] Cloud-hosted version (Kubix Cloud)
 - [ ] Slack / PagerDuty alerts
 - [ ] GitHub Actions integration
 
@@ -134,30 +137,20 @@ Want a connector that doesn't exist yet? [Open an issue](https://github.com/kubi
 
 Kubix is in early development and contributions are very welcome.
 
+Each repository has its own setup guide. To get the full stack running locally:
+
 ```bash
-# Fork the repo, then:
-git clone https://github.com/YOUR_USERNAME/kubix.git
+# Clone the main repo first
+git clone https://github.com/kubixhq/kubix.git
 cd kubix
 docker compose -f docker-compose.dev.yml up
 ```
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines, local setup, and how to build a connector.
+This pulls and runs all services together. To work on a specific component, clone that repo separately and follow its own `CONTRIBUTING.md`.
 
-Good first issues are tagged [`good first issue`](https://github.com/kubixhq/kubix/issues?q=is%3Aissue+label%3A%22good+first+issue%22) on GitHub.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for org-wide guidelines and how to build a connector.
 
-## Self-hosted vs Kubix Cloud
-
-| | Self-hosted (free) | Kubix Cloud |
-|---|---|---|
-| All 3 modules | ✅ | ✅ |
-| Unlimited projects | ✅ | ✅ |
-| Your infrastructure | ✅ | — |
-| SSO / SAML | — | ✅ |
-| Team permissions | — | ✅ |
-| Managed hosting | — | ✅ |
-| SLA | — | ✅ |
-
-Kubix Cloud is coming soon. [Join the waitlist →](https://kubix.dev)
+Good first issues are tagged [`good first issue`](https://github.com/kubixhq/kubix/issues?q=is%3Aissue+label%3A%22good+first+issue%22) across all repos.
 
 ## License
 
