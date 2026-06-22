@@ -6,7 +6,7 @@ on:
       go-version-matrix:
         description: "Go versions to test against"
         type: string
-        default: '["1.21", "1.22"]'
+        default: '["1.24", "1.25"]'
       working-directory:
         description: "Working directory"
         type: string
